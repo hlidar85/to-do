@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Container,
+  Select,
   Table,
   Text,
   TextArea,
@@ -18,13 +19,14 @@ export default async function Home() {
     });
     revalidatePath("/");
   };
+  const statuses = await prisma.status.findMany();
   const toDoItems = await prisma.toDo.findMany();
   return (
     <main>
-      <Container>
+      <Container maxWidth="50rem">
         <Text>Hello world</Text>
 
-        <Box maxWidth="50rem">
+        <Box>
           <form action={addToDo}>
             <TextArea name="toDoItem" size="1" placeholder="To Do" />
             <Button mt="5" type="submit">
@@ -32,7 +34,7 @@ export default async function Home() {
             </Button>
           </form>
         </Box>
-        <Box maxWidth="50rem">
+        <Box>
           <Table.Root>
             <Table.Header>
               <Table.Row>
@@ -44,7 +46,31 @@ export default async function Home() {
               {toDoItems.map((toDo) => (
                 <Table.Row key={toDo.id}>
                   <Table.Cell>{toDo.toDo}</Table.Cell>
-                  <Table.Cell>{toDo.statusId}</Table.Cell>
+                  <Table.Cell align="right">
+                    <Select.Root defaultValue={toDo.statusId}>
+                      <Select.Trigger />
+                      <Select.Content>
+                        <Select.Group>
+                          <Select.Label>Status</Select.Label>
+                          {statuses.map((status) => (
+                            <Select.Item
+                              key={status.status}
+                              value={status.status}
+                            >
+                              {status.DisplayNames}
+                            </Select.Item>
+                          ))}
+                        </Select.Group>
+                        <Select.Group>
+                          <Select.Label>action</Select.Label>
+                          <Select.Item value="edit">Edit</Select.Item>
+                          <Select.Item value="delete">
+                            <Text>Delete</Text>
+                          </Select.Item>
+                        </Select.Group>
+                      </Select.Content>
+                    </Select.Root>
+                  </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>

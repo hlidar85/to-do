@@ -6,6 +6,7 @@ const main = async () => {
     update: {},
     create: {
       status: "OPEN",
+      DisplayNames: "Open",
     },
   });
   const inProgress = await prisma.status.upsert({
@@ -13,6 +14,7 @@ const main = async () => {
     update: {},
     create: {
       status: "IN_PROGRESS",
+      DisplayNames: "In progress",
     },
   });
   const close = await prisma.status.upsert({
@@ -20,6 +22,7 @@ const main = async () => {
     update: {},
     create: {
       status: "CLOSE",
+      DisplayNames: "Close",
     },
   });
   await prisma.toDo.deleteMany();
