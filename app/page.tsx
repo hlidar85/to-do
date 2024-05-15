@@ -24,7 +24,11 @@ export default async function Home() {
   return (
     <main>
       <Container maxWidth="50rem">
-        <Text>Hello world</Text>
+        <Box mb="5" mt="3">
+          <Text as="div" size="8" align="center">
+            To do test app
+          </Text>
+        </Box>
 
         <Box>
           <form action={addToDo}>
@@ -39,7 +43,7 @@ export default async function Home() {
             <Table.Header>
               <Table.Row>
                 <Table.Cell>To Do Items</Table.Cell>
-                <Table.Cell>status</Table.Cell>
+                <Table.Cell align="right">status</Table.Cell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
