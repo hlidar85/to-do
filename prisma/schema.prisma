@@ -23,6 +23,7 @@ model ToDo {
 
 model Status {
   status String @id
-  DisplayNames String 
+  DisplayNames String
+  color String
   ToDo   ToDo[]
 }

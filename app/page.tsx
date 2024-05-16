@@ -1,6 +1,7 @@
 import prisma from "@/prisma/client";
 import { Prisma } from "@prisma/client";
 import {
+  Badge,
   Box,
   Button,
   Container,
@@ -9,6 +10,7 @@ import {
   Text,
   TextArea,
 } from "@radix-ui/themes";
+import { badgePropDefs } from "@radix-ui/themes/dist/esm/components/badge.props.d.ts";
 import { revalidatePath } from "next/cache";
 
 export default async function Home() {
@@ -65,7 +67,7 @@ export default async function Home() {
                         defaultValue={toDo.statusId}
                         onValueChange={statusChange.bind(null, toDo.id)}
                       >
-                        <Select.Trigger />
+                        <Select.Trigger variant="ghost" />
                         <Select.Content>
                           <Select.Group>
                             <Select.Label>Status</Select.Label>
@@ -74,7 +76,13 @@ export default async function Home() {
                                 key={status.status}
                                 value={status.status}
                               >
-                                {status.DisplayNames}
+                                <Badge
+                                  color={
+                                    status.color as "red" | "blue" | "green"
+                                  }
+                                >
+                                  {status.DisplayNames}
+                                </Badge>
                               </Select.Item>
                             ))}
                           </Select.Group>
