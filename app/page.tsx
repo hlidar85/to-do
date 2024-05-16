@@ -23,10 +23,16 @@ export default async function Home() {
   };
   const statusChange = async (id: number, status: string) => {
     "use server";
-    await prisma.toDo.update({
-      where: { id: id },
-      data: { statusId: status },
-    });
+    if (status === "delete") {
+      await prisma.toDo.delete({ where: { id: id } });
+    } else if (status === "edit") {
+      console.log("edit");
+    } else {
+      await prisma.toDo.update({
+        where: { id: id },
+        data: { statusId: status },
+      });
+    }
     revalidatePath("/");
   };
 
@@ -64,6 +70,7 @@ export default async function Home() {
                   <Table.Cell align="right">
                     <form>
                       <Select.Root
+                        key={toDo.id}
                         defaultValue={toDo.statusId}
                         onValueChange={statusChange.bind(null, toDo.id)}
                       >
