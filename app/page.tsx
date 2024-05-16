@@ -12,6 +12,7 @@ import {
 } from "@radix-ui/themes";
 import { badgePropDefs } from "@radix-ui/themes/dist/esm/components/badge.props.d.ts";
 import { revalidatePath } from "next/cache";
+import Selector from "./Selector";
 
 export default async function Home() {
   const addToDo = async (fromdata: FormData) => {
@@ -21,23 +22,10 @@ export default async function Home() {
     });
     revalidatePath("/");
   };
-  const statusChange = async (id: number, status: string) => {
-    "use server";
-    if (status === "delete") {
-      await prisma.toDo.delete({ where: { id: id } });
-    } else if (status === "edit") {
-      console.log("edit");
-    } else {
-      await prisma.toDo.update({
-        where: { id: id },
-        data: { statusId: status },
-      });
-    }
-    revalidatePath("/");
-  };
 
-  const statuses = await prisma.status.findMany();
   const toDoItems = await prisma.toDo.findMany();
+  const statuses = await prisma.status.findMany();
+
   return (
     <main>
       <Container maxWidth="50rem">
@@ -68,41 +56,7 @@ export default async function Home() {
                 <Table.Row key={toDo.id}>
                   <Table.Cell>{toDo.toDo}</Table.Cell>
                   <Table.Cell align="right">
-                    <form>
-                      <Select.Root
-                        key={toDo.id}
-                        defaultValue={toDo.statusId}
-                        onValueChange={statusChange.bind(null, toDo.id)}
-                      >
-                        <Select.Trigger variant="ghost" />
-                        <Select.Content>
-                          <Select.Group>
-                            <Select.Label>Status</Select.Label>
-                            {statuses.map((status) => (
-                              <Select.Item
-                                key={status.status}
-                                value={status.status}
-                              >
-                                <Badge
-                                  color={
-                                    status.color as "red" | "blue" | "green"
-                                  }
-                                >
-                                  {status.DisplayNames}
-                                </Badge>
-                              </Select.Item>
-                            ))}
-                          </Select.Group>
-                          <Select.Group>
-                            <Select.Label>action</Select.Label>
-                            <Select.Item value="edit">Edit</Select.Item>
-                            <Select.Item value="delete">
-                              <Text>Delete</Text>
-                            </Select.Item>
-                          </Select.Group>
-                        </Select.Content>
-                      </Select.Root>
-                    </form>
+                    <Selector toDo={toDo} statuses={statuses} />
                   </Table.Cell>
                 </Table.Row>
               ))}
