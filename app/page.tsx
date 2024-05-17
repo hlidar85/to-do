@@ -10,6 +10,7 @@ import {
 import { revalidatePath } from "next/cache";
 import Selector from "./Selector";
 import ToDoForm from "./ToDoForm";
+import { redirect } from "next/navigation";
 
 export default async function Home({
   searchParams,
@@ -25,7 +26,9 @@ export default async function Home({
     toDoEdit = await prisma.toDo.findUnique({
       where: { id: parseInt(searchParams.toDoEditId) },
     });
+    if (!toDoEdit) redirect("/");
   }
+
   return (
     <main>
       <Container maxWidth="50rem">
