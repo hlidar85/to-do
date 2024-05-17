@@ -11,6 +11,11 @@ import { revalidatePath } from "next/cache";
 import Selector from "./Selector";
 import ToDoForm from "./ToDoForm";
 import { redirect } from "next/navigation";
+import {
+  ArrowUpIcon,
+  ArrowDownIcon,
+  ArrowRightIcon,
+} from "@radix-ui/react-icons";
 
 export default async function Home({
   searchParams,
@@ -45,7 +50,8 @@ export default async function Home({
           <Table.Root>
             <Table.Header>
               <Table.Row>
-                <Table.Cell>To Do Items</Table.Cell>
+                <Table.Cell align="left">Priority</Table.Cell>
+                <Table.Cell align="left">To Do Items</Table.Cell>
                 <Table.Cell align="right">Created at</Table.Cell>
                 <Table.Cell align="right">status</Table.Cell>
               </Table.Row>
@@ -53,7 +59,16 @@ export default async function Home({
             <Table.Body>
               {toDoItems.map((toDo) => (
                 <Table.Row key={toDo.id}>
-                  <Table.Cell>{toDo.toDo}</Table.Cell>
+                  <Table.Cell align="left">
+                    {toDo.priorityId === 0 ? (
+                      <ArrowDownIcon color="blue" />
+                    ) : toDo.priorityId === 1 ? (
+                      <ArrowRightIcon color="orange" />
+                    ) : (
+                      <ArrowUpIcon color="red" />
+                    )}
+                  </Table.Cell>
+                  <Table.Cell align="left">{toDo.toDo}</Table.Cell>
                   <Table.Cell align="right">
                     {toDo.createdAt.toDateString()}
                   </Table.Cell>

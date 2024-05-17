@@ -14,16 +14,24 @@ datasource db {
 }
 
 model ToDo {
-  id        Int      @id @default(autoincrement())
-  toDo      String
-  createdAt DateTime @default(now())
-  statusId  String   @default("OPEN")
-  status    Status   @relation(fields: [statusId], references: [status])
+  id         Int      @id @default(autoincrement())
+  toDo       String
+  createdAt  DateTime @default(now())
+  statusId   String   @default("OPEN")
+  status     Status   @relation(fields: [statusId], references: [status])
+  priorityId Int      @default(0)
+  priority   Priority @relation(fields: [priorityId], references: [id])
 }
 
 model Status {
   status       String @id
   DisplayNames String
   color        String
+  ToDo         ToDo[]
+}
+
+model Priority {
+  id           Int    @id @unique
+  DisplayNames String
   ToDo         ToDo[]
 }

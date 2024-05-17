@@ -9,7 +9,7 @@ export const statusChange = async (id: number, status: string) => {
   } else if (status === "edit") {
     redirect("/?toDoEditId=" + id);
     return;
-  } else {
+  } else if (status) {
     await prisma.toDo.update({
       where: { id: id },
       data: { statusId: status },
