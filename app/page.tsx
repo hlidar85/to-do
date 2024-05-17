@@ -1,31 +1,31 @@
 import prisma from "@/prisma/client";
-import { Prisma } from "@prisma/client";
 import {
-  Badge,
   Box,
   Button,
   Container,
-  Select,
   Table,
   Text,
   TextArea,
 } from "@radix-ui/themes";
-import { badgePropDefs } from "@radix-ui/themes/dist/esm/components/badge.props.d.ts";
 import { revalidatePath } from "next/cache";
 import Selector from "./Selector";
+import ToDoForm from "./ToDoForm";
 
-export default async function Home() {
-  const addToDo = async (fromdata: FormData) => {
-    "use server";
-    await prisma.toDo.create({
-      data: { toDo: fromdata.get("toDoItem") as string },
-    });
-    revalidatePath("/");
-  };
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { toDoEditId: string };
+}) {
+  const toDoItems = await prisma.toDo.findMany({ orderBy: { id: "desc" } });
 
-  const toDoItems = await prisma.toDo.findMany();
   const statuses = await prisma.status.findMany();
 
+  let toDoEdit;
+  if (searchParams.toDoEditId) {
+    toDoEdit = await prisma.toDo.findUnique({
+      where: { id: parseInt(searchParams.toDoEditId) },
+    });
+  }
   return (
     <main>
       <Container maxWidth="50rem">
@@ -36,18 +36,14 @@ export default async function Home() {
         </Box>
 
         <Box>
-          <form action={addToDo}>
-            <TextArea name="toDoItem" size="1" placeholder="To Do" />
-            <Button mt="5" type="submit">
-              Add to do
-            </Button>
-          </form>
+          <ToDoForm toDoEdit={toDoEdit} />
         </Box>
         <Box>
           <Table.Root>
             <Table.Header>
               <Table.Row>
                 <Table.Cell>To Do Items</Table.Cell>
+                <Table.Cell align="right">Created at</Table.Cell>
                 <Table.Cell align="right">status</Table.Cell>
               </Table.Row>
             </Table.Header>
@@ -55,6 +51,9 @@ export default async function Home() {
               {toDoItems.map((toDo) => (
                 <Table.Row key={toDo.id}>
                   <Table.Cell>{toDo.toDo}</Table.Cell>
+                  <Table.Cell align="right">
+                    {toDo.createdAt.toDateString()}
+                  </Table.Cell>
                   <Table.Cell align="right">
                     <Selector toDo={toDo} statuses={statuses} />
                   </Table.Cell>

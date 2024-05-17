@@ -2,14 +2,21 @@
 import { Status, ToDo } from "@prisma/client";
 import { Badge, Select, Text } from "@radix-ui/themes";
 import { statusChange } from "./actions";
+import { useState } from "react";
 
 const Selector = ({ toDo, statuses }: { toDo: ToDo; statuses: Status[] }) => {
+  const [value, setValue] = useState<string>();
   return (
     <form>
       <Select.Root
         key={toDo.id}
         defaultValue={toDo.statusId}
-        onValueChange={statusChange.bind(null, toDo.id)}
+        value={value}
+        onValueChange={(e) => {
+          statusChange.bind(null, toDo.id);
+          statusChange(toDo.id, e);
+          setValue(toDo.statusId);
+        }}
       >
         <Select.Trigger variant="ghost" />
         <Select.Content>
