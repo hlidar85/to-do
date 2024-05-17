@@ -7,7 +7,6 @@ export const statusChange = async (id: number, status: string) => {
   if (status === "delete") {
     await prisma.toDo.delete({ where: { id: id } });
   } else if (status === "edit") {
-    console.log("edit");
     redirect("/?toDoEditId=" + id);
     return;
   } else {
