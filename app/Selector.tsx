@@ -2,10 +2,13 @@
 import { Status, ToDo } from "@prisma/client";
 import { Badge, Select, Text } from "@radix-ui/themes";
 import { statusChange } from "./actions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Selector = ({ toDo, statuses }: { toDo: ToDo; statuses: Status[] }) => {
   const [value, setValue] = useState<string>();
+  useEffect(() => {
+    setValue(toDo.statusId);
+  }, [toDo.statusId]);
   return (
     <form>
       <Select.Root
