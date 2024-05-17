@@ -30,13 +30,13 @@ const main = async () => {
   });
   await prisma.toDo.deleteMany();
   const issue1 = await prisma.toDo.create({
-    data: { toDo: "issue 1", statusId: "IN_PROGRESS" },
+    data: { toDo: "To do item 1" },
   });
   const issue2 = await prisma.toDo.create({
-    data: { toDo: "issue 2", statusId: "CLOSE" },
+    data: { toDo: "To do item 2", statusId: "IN_PROGRESS" },
   });
   const issue3 = await prisma.toDo.create({
-    data: { toDo: "issue 3" },
+    data: { toDo: "To do item 3", statusId: "CLOSE" },
   });
   console.log(open, inProgress, close);
 };
