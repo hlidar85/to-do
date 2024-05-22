@@ -3,6 +3,7 @@
 import { Button, TextArea } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 import { addToDo } from "./actions";
+import { useRouter } from "next/navigation";
 
 interface ToDo {
   id: number;
@@ -16,6 +17,7 @@ const ToDoForm = ({ toDoEdit }: { toDoEdit?: ToDo | undefined | null }) => {
     setDoTo(toDoEdit?.toDo);
     setDoToId(toDoEdit?.id || 0);
   }, [toDoEdit]);
+  const router = useRouter();
 
   return (
     <form
@@ -43,6 +45,19 @@ const ToDoForm = ({ toDoEdit }: { toDoEdit?: ToDo | undefined | null }) => {
       <Button mt="5" type="submit">
         {toDoId !== 0 ? "Edit to do" : "Add to do"}
       </Button>
+      {toDoId !== 0 && (
+        <Button
+          mt="5"
+          color="crimson"
+          type="button"
+          onClick={() => {
+            setDoTo("");
+            router.push("/");
+          }}
+        >
+          Cancel
+        </Button>
+      )}
     </form>
   );
 };
