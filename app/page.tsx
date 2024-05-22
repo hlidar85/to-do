@@ -2,6 +2,7 @@ import prisma from "@/prisma/client";
 import {
   Box,
   Button,
+  Card,
   Container,
   Table,
   Text,
@@ -16,13 +17,18 @@ import {
   ArrowDownIcon,
   ArrowRightIcon,
 } from "@radix-ui/react-icons";
+import Link from "next/link";
+import { ToDo } from "@prisma/client";
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { toDoEditId: string };
+  searchParams: { toDoEditId: string; orderBy: keyof ToDo };
 }) {
-  const toDoItems = await prisma.toDo.findMany({ orderBy: { id: "desc" } });
+  const orderBy = searchParams.orderBy ? searchParams.orderBy : "id";
+  const toDoItems = await prisma.toDo.findMany({
+    orderBy: { [orderBy]: "desc" },
+  });
 
   const statuses = await prisma.status.findMany();
 
@@ -47,13 +53,20 @@ export default async function Home({
           <ToDoForm toDoEdit={toDoEdit} />
         </Box>
         <Box>
-          <Table.Root>
+          <Table.Root variant="surface" mt="5">
             <Table.Header>
               <Table.Row>
-                <Table.Cell align="left">Priority</Table.Cell>
-                <Table.Cell align="left">To Do Items</Table.Cell>
-                <Table.Cell align="right">Created at</Table.Cell>
-                <Table.Cell align="right">status</Table.Cell>
+                {columns.map((colum) => (
+                  <Table.Cell key={colum.value} align={colum.align}>
+                    <Link
+                      href={{
+                        query: { ...searchParams, orderBy: colum.value },
+                      }}
+                    >
+                      {colum.label}
+                    </Link>
+                  </Table.Cell>
+                ))}
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -84,3 +97,14 @@ export default async function Home({
     </main>
   );
 }
+
+const columns: {
+  label: string;
+  value: keyof ToDo;
+  align?: "center" | "right" | "left" | "justify" | "char" | undefined;
+}[] = [
+  { label: "Priority", value: "priorityId", align: "left" },
+  { label: "To Do Items", value: "toDo", align: "left" },
+  { label: "Created at", value: "createdAt", align: "right" },
+  { label: "Status", value: "statusId", align: "right" },
+];

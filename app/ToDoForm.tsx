@@ -42,12 +42,12 @@ const ToDoForm = ({ toDoEdit }: { toDoEdit?: ToDo | undefined | null }) => {
         value={toDoId!}
         onChange={(value) => setDoToId(parseInt(value.target.value))}
       />
-      <Button mt="5" type="submit">
+      <Button mt="3" type="submit">
         {toDoId !== 0 ? "Edit to do" : "Add to do"}
       </Button>
       {toDoId !== 0 && (
         <Button
-          mt="5"
+          mt="3"
           color="crimson"
           type="button"
           onClick={() => {
