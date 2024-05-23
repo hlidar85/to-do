@@ -1,33 +1,31 @@
 import prisma from "@/prisma/client";
+import { ToDo } from "@prisma/client";
 import {
-  Box,
-  Button,
-  Card,
-  Container,
-  Table,
-  Text,
-  TextArea,
-} from "@radix-ui/themes";
-import { revalidatePath } from "next/cache";
-import Selector from "./Selector";
-import ToDoForm from "./ToDoForm";
-import { redirect } from "next/navigation";
-import {
-  ArrowUpIcon,
   ArrowDownIcon,
   ArrowRightIcon,
+  ArrowUpIcon,
 } from "@radix-ui/react-icons";
+import { Box, Container, Select, Table, Text } from "@radix-ui/themes";
 import Link from "next/link";
-import { ToDo } from "@prisma/client";
+import { redirect } from "next/navigation";
+import Selector from "./Selector";
+import ToDoForm from "./ToDoForm";
+import { useState } from "react";
+import SelectPriority from "./SelectPriority";
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { toDoEditId: string; orderBy: keyof ToDo };
+  searchParams: {
+    toDoEditId: string;
+    orderBy: keyof ToDo;
+    order: "desc" | "asc" | undefined;
+  };
 }) {
   const orderBy = searchParams.orderBy ? searchParams.orderBy : "id";
+  const order = searchParams.order ? searchParams.order : "asc";
   const toDoItems = await prisma.toDo.findMany({
-    orderBy: { [orderBy]: "desc" },
+    orderBy: { [orderBy]: order },
   });
 
   const statuses = await prisma.status.findMany();
@@ -56,14 +54,22 @@ export default async function Home({
           <Table.Root variant="surface" mt="5">
             <Table.Header>
               <Table.Row>
-                {columns.map((colum) => (
-                  <Table.Cell key={colum.value} align={colum.align}>
+                {columns.map((column) => (
+                  <Table.Cell key={column.value} align={column.align}>
                     <Link
                       href={{
-                        query: { ...searchParams, orderBy: colum.value },
+                        query: {
+                          ...searchParams,
+                          orderBy: column.value,
+                          order:
+                            searchParams.order == "asc" &&
+                            column.value === searchParams.orderBy
+                              ? "desc"
+                              : "asc",
+                        },
                       }}
                     >
-                      {colum.label}
+                      {column.label}
                     </Link>
                   </Table.Cell>
                 ))}
@@ -73,13 +79,10 @@ export default async function Home({
               {toDoItems.map((toDo) => (
                 <Table.Row key={toDo.id}>
                   <Table.Cell align="left">
-                    {toDo.priorityId === 0 ? (
-                      <ArrowDownIcon color="blue" />
-                    ) : toDo.priorityId === 1 ? (
-                      <ArrowRightIcon color="orange" />
-                    ) : (
-                      <ArrowUpIcon color="red" />
-                    )}
+                    <SelectPriority
+                      priorityId={toDo.priorityId}
+                      toDoId={toDo.id}
+                    />
                   </Table.Cell>
                   <Table.Cell align="left">{toDo.toDo}</Table.Cell>
                   <Table.Cell align="right">
@@ -108,3 +111,16 @@ const columns: {
   { label: "Created at", value: "createdAt", align: "right" },
   { label: "Status", value: "statusId", align: "right" },
 ];
+
+const flipOrder = (
+  order: "desc" | "asc" | undefined,
+  orderBy: keyof ToDo,
+  newOrderBy: keyof ToDo
+): "desc" | "asc" => {
+  console.log(orderBy, newOrderBy);
+  if (orderBy !== newOrderBy) {
+    return "asc";
+  }
+  if (order === "desc") return "asc";
+  return "desc";
+};

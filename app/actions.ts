@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/prisma/client";
+import { Priority } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -15,6 +16,11 @@ export const statusChange = async (id: number, status: string) => {
       data: { statusId: status },
     });
   }
+  revalidatePath("/");
+};
+
+export const priorityChange = async (id: number, priorityId: number) => {
+  await prisma.toDo.update({ where: { id: id }, data: { priorityId } });
   revalidatePath("/");
 };
 
